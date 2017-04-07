@@ -1,0 +1,83 @@
+/*郑州轻工业学院 1055 兔子繁殖问题*/
+
+/*
+Description
+这是一个有趣的古典数学问题，著名意大利数学家Fibonacci曾提出一个问题：有一对小兔子，从出生后第3个月起每个月都生一对兔子。小兔子长到第3个月后每个月又生一对兔子。按此规律，假设没有兔子死亡，第一个月有一对刚出生的小兔子，问第n个月有多少对兔子？
+
+Input
+输入月数n（1<=n<=44）。
+
+Output
+输出第n个月有多少对兔子。
+
+Sample Input
+3
+
+Sample Output
+2
+
+HINT
+本题是一个经典的递推入门题目：
+用f(n)表示第n个月的兔子数目，则：
+f(n) = f(n-1) + 本月新生兔子数
+而，本月新生兔子数 = f(n-2) (因为上上个月已存在的每只兔子，本月都会新生一只兔子）
+所以，f(n) = f(n-1) + f(n-2)
+这就是著名的fabinacci数列，后一项等于前两项的和： 1 1 2 3 5 8.....
+*/
+
+/*
+题解：
+斐波那契数列入门经典题目，递归算法经典反面教材。
+如果尝试在ACM中使用递归计算斐波那契数列，绝对超时。
+递归频繁出栈压栈，并且斐波那契数列造成了几何级数的重复计算，非常容易超时。
+递归本身是非常没有效率的算法，频繁的函数调用，中间结果的重复计算，导致效率低下。
+所以，注意当数量级很大的时候，不推荐使用递归。例子：
+	fab(5) ------> 调用fab函数了15次
+解决方法：
+使用数组。
+*/
+
+/*递归算法 Time Limit Exceed 3000ms*/
+
+import java.util.Scanner;
+
+public class Main{
+	public static int fab(int n){
+		if((n == 1)||(n == 2)){
+			return 1;
+		}else{
+			return fab(n-1)+fab(n-2);
+		}
+	}
+
+	public static void main(String[] args){
+		Scanner input = new Scanner(System.in);
+
+		int n = input.nextInt();
+		System.out.println(fab(n));
+	}
+}
+
+/*数组算法 AC 164ms*/
+
+import java.util.Scanner;
+
+public class Main{
+	public static void main(String[] args){
+		Scanner input = new Scanner(System.in);
+
+		int n = input.nextInt();
+		int[] a = new int[n];
+		if(n == 1){
+			a[0] = 1;
+			System.out.println(a[0]);
+		}else{
+			a[0] = 1;
+			a[1] = 1;
+			for(int i = 2;i < n;i++){
+				a[i] = a[i-1]+a[i-2];
+			}
+			System.out.println(a[n-1]);
+		}
+	}
+}
