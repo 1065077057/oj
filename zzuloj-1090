@@ -1,0 +1,57 @@
+/*郑州轻工业学院 1090 整数幂（多实例测试）*/
+
+/*
+Description
+求A^B的最后三位数表示的整数（1<=A,B<=1000） 
+
+Input
+n个测试实例，每个实例给出两个正整数A,B
+
+Output
+输出A^B的最后三位（没有前导0）
+
+Sample Input
+2
+2 3
+12 6
+
+Sample Output
+8
+984
+*/
+
+/*
+题解：
+不能让数的巨大化迷惑了，由于只取后三位，实际上每次求幂的时候有效数据之后后三位。
+那么在每次计算的时候就对数据求膜计算 number%1000 保证每次运算的时候都是后三位进
+行计算。
+尝试输出 Math.pow(12,6) 的每个步骤，可以理解为什么只运算后三位。
+*/
+
+/*AC 191ms 由于按照步骤计算，所以理论上有点浪费时间*/
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Main{
+	public static void main(String[] args){
+		Scanner input = new Scanner(System.in);
+		ArrayList<Integer> arr = new ArrayList<Integer>();
+
+		int times = input.nextInt();
+		int temp = times;
+		while(times-- != 0){
+			int a = input.nextInt();
+			int b = input.nextInt();
+			int number = a%1000;
+
+			for(int i = 0;i < b-1;i++){
+				number = (number*a)%1000;
+			}
+			arr.add(number);
+		}
+		for(int i = 0;i < temp;i++){
+			System.out.println(arr.get(i));
+		}
+	}
+}
