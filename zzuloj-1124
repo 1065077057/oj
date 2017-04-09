@@ -1,0 +1,212 @@
+/*郑州轻工业学院 1124 两个有序数组合并*/
+
+/*
+Description
+已知数组a中有m个按升序序排列的元素，数组b中有n个降序排列的元素，编程将a与b中的所有元素按降序存入数组c中。
+
+Input
+输入有两行，第一行首先是一个正整数m，然后是m个整数；第二行首先是一个正整数n，然后是n个整数，m, n均小于等于1000000。
+
+Output
+输出合并后的m+n个整数，数据之间用空格隔开。输出占一行。
+
+Sample Input
+4 1 2 5 7
+3 6 4 2
+
+Sample Output
+7 6 5 4 2 2 1
+*/
+
+/*
+题解：
+	首先想到链表，该题可以当做链表练习题来完成。但是链表这个数据结构在
+插入删除等操作上速度快，在查找的时候速度慢。由于数组是有序的，所以只需
+要对链表进行一次查询，但是仍然会超时。代码1是用自己写的链表完成，纯属
+练习。
+	不超时的方法是用数组法，即定义 a b 两个数组，然后在2个数组中互相选
+择大数添加到 c 数组上，最后输出。核心算法在于如何顺序获取2个数组中的数
+据。这个算法参考快排中的左右互相交换的算法，使用总体判断 while ，当 a
+数组中的数开始小于 b 时，更换到 b 数组继续比较。注意一点：while 在结束
+的时候通常有一个数组没有比较完，因为另一个数组已经完成，所以会出错。在
+出 while 循环后要有2个 if 语句将剩余的数据加上。
+第二个算法 Java 实现仍然超时（不知道为什么，百度的算法跟我的一样），但
+是使用 C 不超时 125 ms。
+	注意格式：输出数据要求之间用空格隔开，所以不能直接遍历输出，而是最
+后一个数据单独输出，否则最后一个数据后面还有空格。
+*/
+
+/*Time Limit Exceed 3000ms*/
+import java.util.Scanner;
+
+class Node{
+	public int date;
+	public Node next;
+
+	Node(int date){
+		this.date = date;
+		next = null;
+	}
+}
+
+public class Main{
+	public static void main(String[] args){
+		Scanner input = new Scanner(System.in);
+		
+		int aNumber = input.nextInt();
+		int[] a = new int[aNumber];
+		for(int i = 0;i < aNumber;i++){
+			a[i] = input.nextInt();
+		}
+		int bNumber = input.nextInt();
+		int[] b = new int[bNumber];
+		for(int i = 0;i < bNumber;i++){
+			b[i] = input.nextInt();
+		}
+		Node head;
+		if((a[aNumber-1] >= b[0] ? a[aNumber-1]:b[0]) == a[aNumber-1]){
+			head = new Node(a[aNumber-1]);
+			for(int i = 0;i < aNumber-1;i++){
+				Node newNode = new Node(a[i]);
+				newNode.next = head.next;
+				head.next = newNode;
+			}
+			Node key = head;
+			for(int i = 0;i < bNumber;i++){
+				Node insert = new Node(b[i]);
+				while(key != null){
+					if(b[i] < key.next.date){
+						key = key.next;
+					}else{
+						insert.next = key.next;
+						key.next = insert;
+						break;
+					}
+				}
+			}
+		}else{
+			head = new Node(b[0]);
+			for(int i = bNumber-1;i > 0;i--){
+				Node newNode = new Node(b[i]);
+				newNode.next = head.next;
+				head.next = newNode;
+			}
+			Node key = head;
+			for(int i = aNumber-1;i >= 0;i--){
+				Node insert = new Node(a[i]);
+				while(key.next != null){
+					if(a[i] < key.next.date){
+						key = key.next;
+					}else{
+						insert.next = key.next;
+						key.next = insert;
+						break;
+					}
+				}
+			}
+		}
+		System.out.printf("%d ",head.date);
+		Node link = head.next;
+		while(link != null){
+			System.out.printf("%d ",link.date);
+			link = link.next;
+		}
+	}
+}
+
+/*第二种算法 Java 版本 Time Limit Exceed 3000ms*/
+import java.util.Scanner;
+
+public class Main{
+	public static void main(String[] args){
+		Scanner input = new Scanner(System.in);
+		
+		int aNumber = input.nextInt();
+		int[] a = new int[aNumber];
+		for(int i = 0;i < aNumber;i++){
+			a[i] = input.nextInt();
+		}
+		int bNumber = input.nextInt();
+		int[] b = new int[bNumber];
+		for(int i = 0;i < bNumber;i++){
+			b[i] = input.nextInt();
+		}
+		int[] c = new int[aNumber+bNumber];
+
+		int i = aNumber-1;
+		int j = 0;
+		int k = 0;
+		while((i >= 0)&&(j <= bNumber-1)&&(k <= aNumber+bNumber-1)){
+			if(a[i] <= b[j]){
+				c[k] = b[j];
+				j++;
+				k++;
+			}else{
+				c[k] = a[i];
+				i--;
+				k++;
+			}
+		}
+		if(i != -1){
+			for(;i >= 0;i--,k++){
+				c[k] = a[i];
+			}
+		}
+		if(j != bNumber){
+			for(;j < bNumber;j++,k++){
+				c[k] = b[j];
+			}
+		}
+		for(int s = 0;s < aNumber+bNumber-1;s++){
+			System.out.printf("%d ",c[s]);
+		}
+		System.out.printf("%d",c[aNumber+bNumber]);
+	}
+}
+
+/*第二种算法 C 版本 AC 125ms*/
+#include<stdio.h>
+
+int main(){
+	int aNumber;
+	int bNumber;
+	scanf("%d",&aNumber);
+	int a[aNumber];
+	for(int i = 0;i < aNumber;i++){
+		scanf("%d",&a[i]);
+	}
+	scanf("%d",&bNumber);
+	int b[bNumber];
+	for(int i = 0;i < bNumber;i++){
+		scanf("%d",&b[i]);
+	}
+	int c[aNumber+bNumber];
+
+	int i = aNumber-1;
+	int j = 0;
+	int k = 0;
+	while((i >= 0)&&(j <= bNumber-1)&&(k <= aNumber+bNumber-1)){
+		if(a[i] <= b[j]){
+			c[k] = b[j];
+			j++;
+			k++;
+		}else{
+			c[k] = a[i];
+			i--;
+			k++;
+		}
+	}
+	if(i != -1){
+		for(;i >= 0;i--,k++){
+			c[k] = a[i];
+		}
+	}
+	if(j != bNumber){
+		for(;j < bNumber;j++,k++){
+			c[k] = b[j];
+		}
+	}
+	for(int s = 0;s < aNumber+bNumber;s++){
+		printf("%d ",c[s]);
+	}
+}
