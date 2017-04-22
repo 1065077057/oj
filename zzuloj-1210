@@ -1,0 +1,48 @@
+/*郑州轻工业学院 1210 东东的女朋友（二）*/
+
+/*
+题解：
+1.注意方法：
+	使用一个数组 a[25] 然后将 left-right 时间段内数+1，这样
+比原来开二位数组 a[100][25] 方便很多，直接求数组中最大数就可
+以。
+2.
+	一直WA坑在数组没有重置，结果在测试多组数据的时候，除非运
+气特别好，应该是只有第一组数据是正确的。
+*/
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Main{
+	public static void main(String[] args){
+		Scanner input = new Scanner(System.in);
+		ArrayList<Integer> arr = new ArrayList<Integer>();
+		
+		int t = input.nextInt();
+		int[] a = new int[25];
+		for(int i = 0;i < t;i++){
+			int num = input.nextInt();
+			int top = 0;
+			for(int cl = 0;cl < 25;cl++){
+				a[cl] = 0;
+			}
+			for(int j = 0;j < num;j++){
+				int left = input.nextInt();
+				int right = input.nextInt();
+				for(int key = left;key <= right;key++){
+					a[key]++;
+				}
+			}
+			for(int m = 0;m < 25;m++){
+				if(top <= a[m]){
+					top = a[m];
+				}
+			}
+			arr.add(top);
+		}
+		for(int i = 0;i < t;i++){
+			System.out.println(arr.get(i));
+		}
+	}
+}
