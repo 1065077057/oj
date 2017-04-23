@@ -1,0 +1,113 @@
+/*郑州轻工业学院 1235*/
+
+/*
+Description
+学校的小礼堂每天都会有许多活动，有时间这些活动的计划时间会发生冲突，需要选择出一些活动进行举办。小刘的工作就是安排学校小礼堂的活动，每个时间最多安排一个活动。现在小刘有一些活动计划的时间表，他想尽可能的安排更多的活动，请问他该如何安排。
+
+Input
+第一行是一个整型数m(m<100)表示共有m组测试数据。 
+每组测试数据的第一行是一个整数n(1随后的n行，每行有两个正整数Bi,Ei(0<=Bi,Ei<10000),分别表示第i个活动的起始与结束时间（Bi<=Ei)
+
+Output
+对于每一组输入，输出最多能够安排的活动数量。 
+每组的输出占一行
+
+Sample Input
+2
+2
+1 10
+10 11
+3
+1 10
+10 11
+11 20
+
+Sample Output
+1
+2
+*/
+
+/*
+题解：
+	核心思想是贪心。第一次提交是 WA ，主要就是没看清题意，要求输出的是最多安排的场次。那么就不能使用 a[10000] 数组
+然后累加的思想来完成。利用贪心，获得最多的情况。有两种思路：
+	1.对所有活动的时间排序，从最小的开始填入 a[10000] 数组，判断是否重叠，不重叠就填入并且安排活动数 time++
+	2.利用活动结束时间对活动排序，从最先结束的活动开始，依次向后选择活动，充填数组。
+个人认为 2 方法简单，下面的 AC 代码是用的 2 算法。
+
+2 方法：
+	Data 类数据域中的 left right 对应一个活动的开始与结束时间。利用 right 进行排序，实际控制的是 data[] 。由于数量
+n 的数值是不确定的，使用快排防止超时。
+	last 保存的是当前活动的结束时间，然后循环获得下一个活动的开始时间，与 last 比较，如果 <last 那么说明活动重叠，
+进行下一个活动，直到 >last ，说明活动可以在一天内共存，并且令 last = data[].right 。last 一直保持活动的结束时间。
+*/
+
+/*Java AC 91688KB 1618ms*/
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Data{
+	public int left;
+	public int right;
+}
+
+public class Main{
+	public static void rightSort(Data[] rightData,int left,int right){
+		if(left > right){
+			return;
+		}
+
+		Data key = rightData[left];
+		int l = left;
+		int r = right;
+		Data temp;
+
+		while(l != r){
+			while((rightData[r].right >= key.right)&&(l < r)){
+				r--;
+			}
+			while((rightData[l].right <= key.right)&&(l < r)){
+				l++;
+			}
+			if(l < r){
+				temp = rightData[l];
+				rightData[l] = rightData[r];
+				rightData[r] = temp;
+			}
+		}
+		rightData[left] = rightData[l];
+		rightData[l] = key;
+		rightSort(rightData,left,l-1);
+		rightSort(rightData,l+1,right);
+	}
+
+	public static void main(String[] args){
+		Scanner input = new Scanner(System.in);
+		ArrayList<Integer> arr = new ArrayList<Integer>();
+
+		int m = input.nextInt();
+		for(int i = 0;i < m;i++){
+			int n = input.nextInt();
+			int time = 1;
+			Data[] data = new Data[n];
+			for(int j = 0;j < n;j++){
+				data[j] = new Data();
+				data[j].left = input.nextInt();
+				data[j].right = input.nextInt();
+			}
+
+			rightSort(data,0,n-1);
+			int last = data[0].right;
+			for(int f = 1;f < n;f++){
+				if(data[f].left > last){
+					last = data[f].right;
+					time++;
+				}
+			}
+			arr.add(time);
+		}
+		for(int i = 0;i < m;i++){
+			System.out.println(arr.get(i));
+		}
+	}
+}
